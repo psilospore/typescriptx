@@ -2,30 +2,30 @@ import { Maybe, Just, Nothing, M } from './Maybe';
 import 'jest';
 import 'jasmine';
 
-describe('Maybe.of', () => {
+describe('Maybe', () => {
 
   it('return Nothing when passed null', () => {
-    expect(Maybe.of(null)).toEqual({
+    expect(Maybe(null)).toEqual({
       type: 'Nothing'
     });
   });
 
   it('return Nothing when passed undefined', () => {
     var testObj: any = {};
-    expect(Maybe.of(testObj.undefined)).toEqual({
+    expect(Maybe(testObj.undefined)).toEqual({
       type: 'Nothing'
     });
   });
 
   it('return Just when passed a nonnull value', () => {
-    expect(Maybe.of("woo")).toEqual({
+    expect(Maybe("woo")).toEqual({
       type: 'Just',
       value: "woo"
     });
   });
 
   it('return Just when passed zero', () => {
-    expect(Maybe.of(0)).toEqual({
+    expect(Maybe(0)).toEqual({
       type: 'Just',
       value: 0
     });
@@ -36,16 +36,16 @@ describe('Maybe.of', () => {
 
 describe('Maybe.caseOf', () => {
 
-  const myMaybe = Maybe.of('adsf');
+  const myMaybe = Maybe('adsf');
 
   const myThing = M(myMaybe).map(str => true);
 
-  const unwrapped = myThing.unwrap();
+  const unwrapped = myThing.un();
 
 });
 
 describe('Maybe.caseOf', () => {
 
-  const myThing = M(Maybe.of('lol')).map(str => true).unwrap();
+  const myThing = M(Maybe('lol')).map(str => true).un();
 
 });

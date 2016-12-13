@@ -24,16 +24,46 @@ class MaybeDecorator<A> {
   constructor(m: Maybe<A>) {
     this.m = m;
   }
-  unwrap(): Maybe<A> {
+  un(): Maybe<A> {
     return this.m;
   }
-  map<B>(f: (a: A) => B): MaybeDecorator<B> {
+  caseOf<Z>(c: CaseOfMatcher<A, Z>): Z {
     switch(this.m.type) {
       case 'Just':
-        return new MaybeDecorator(Just(f(this.m.value)));
+        return c.just(this.m.value);
       case 'Nothing':
-        return new MaybeDecorator<B>(Nothing());
+        return c.nothing();
     }
+  }
+  map<B>(f: (a: A) => B): MaybeDecorator<B> {
+    return this.caseOf({
+      just:     a => M(Just(f(a))),
+      nothing: () => M<B>(Nothing())
+    });
+  }
+  flatMap<B>(f: (a: A) => Maybe<B>): MaybeDecorator<B> {
+    return this.caseOf({
+      just:     a => M(f(a)),
+      nothing: () => M<B>(Nothing())
+    });
+  }
+  getOrElse(f: () => A): A {
+    return this.caseOf({
+      just:     a => a,
+      nothing: () => f()
+    });
+  }
+  orElse(z: A): A {
+    return this.caseOf({
+      just: a => a,
+      nothing: () => z
+    });
+  }
+  isJust(): Boolean {
+    return this.caseOf({
+      just: a => true,
+      nothing: () => false
+    });
   }
 }
 
@@ -41,67 +71,13 @@ export const M = function<A>(m: Maybe<A>): MaybeDecorator<A> {
   return new MaybeDecorator(m);
 };
 
-export const Maybe = {
-  of<A>(a: A): Maybe<A> {
-    switch(a) {
-      case null:
-      case undefined:
-        return Nothing();
-      default:
-        return Just(a);
-    }
-  },
-  caseOf<A>(m: Maybe<A>): CaseOfFunc<A> {
-    switch(m.type){
-      case 'Just':
-        return c => c.just(m.value)
-      case 'Nothing':
-        return c => c.nothing()
-    }
-  },
-  fold<A, B>(m: Maybe<A>): (z: () => B) => (f: (a: A) => B) => B {
-    return Maybe.caseOf(m)({
-      just:     a => z => f => f(a),
-      nothing: () => z => f => z()
-    });
-  },
-  map<A, B>(m: Maybe<A>): (f: (a: A) => B) => Maybe<B>{
-    switch(m.type){
-      case 'Just':
-        return f => Just<B>(f(m.value))
-      case 'Nothing':
-        return f => Nothing()
-    }
-  },
-  getOrElse<A>(m: Maybe<A>): (f: () => A) => A {
-    switch(m.type){
-      case 'Just':
-        return f => m.value
-      case 'Nothing':
-        return f => f()
-    }
-  },
-  orElse<A>(m: Maybe<A>): (a: A) => A {
-    switch(m.type){
-      case 'Just':
-        return a => m.value
-      case 'Nothing':
-        return a => a
-    }
-  },
-  flatMap<A, B>(m: Maybe<A>): (f: (a: A) => Maybe<B>) => Maybe<B> {
-    switch(m.type){
-      case 'Just':
-        return f => f(m.value);
-      case 'Nothing':
-        return f => Nothing();
-    }
-  },
-  isJust<A>(a: Maybe<A>): Boolean {
-    return Maybe.caseOf(a)({
-      just: a => true,
-      nothing: () => false
-    });
+export function Maybe<A>(value?: A): Maybe<A> {
+  switch(value){
+    case null:
+    case undefined:
+      return Nothing();
+    default:
+      return Just(value);  
   }
 }
 
