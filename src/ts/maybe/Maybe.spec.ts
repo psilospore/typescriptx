@@ -33,14 +33,39 @@ describe('Maybe', () => {
 
 });
 
+describe('MaybeDecorator.caseOf', () => {
 
-describe('Maybe.caseOf', () => {
+  it('should invoke "just" when given a Just', () => {
+    const result = M(Just("value")).caseOf({
+      just: v => true,
+      nothing: () => false
+    });
+    expect(result).toBe(true);
+  });
 
-  const myMaybe = Maybe('adsf');
+  it('should invoke "nothing" when given a Nothing', () => {
+    const result = M(Nothing()).caseOf({
+      just: v => true,
+      nothing: () => false
+    });
+    expect(result).toBe(false);
+  });
 
-  const myThing = M(myMaybe).map(str => true);
+  it('should not invoke "nothing" when given a Just', () => {
+    const result = M(Maybe("value")).caseOf({
+      just: v => true,
+      nothing: () => { throw new Error("should not be called") }
+    });
+    expect(result).toBe(true);
+  });
 
-  const unwrapped = myThing.un();
+  it('should not invoke "just" when given a Nothing', () => {
+    const result = M(Nothing()).caseOf({
+      just: v => { throw new Error("should not be called") },
+      nothing: () => false
+    });
+    expect(result).toBe(false);
+  });
 
 });
 
