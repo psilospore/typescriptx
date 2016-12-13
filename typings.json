@@ -1,5 +1,6 @@
 {
-  "ambientDependencies": {
-    "jest": "registry:dt/jest#16.0.0+20161025131017"
+  "globalDependencies": {
+    "jasmine": "registry:dt/jasmine#2.5.0+20161025102649",
+    "jest": "registry:env/jest#0.9.2+20160321204158"
   }
 }

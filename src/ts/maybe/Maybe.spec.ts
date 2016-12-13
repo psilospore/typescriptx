@@ -1,5 +1,6 @@
 import { Maybe, Just, Nothing, M } from './Maybe';
 import 'jest';
+import 'jasmine';
 
 describe('Maybe.of', () => {
 
@@ -41,6 +42,10 @@ describe('Maybe.caseOf', () => {
 
   const unwrapped = myThing.unwrap();
 
-  unwrapped
+});
+
+describe('Maybe.caseOf', () => {
+
+  const myThing = M(Maybe.of('lol')).map(str => true).unwrap();
 
 });
