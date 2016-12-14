@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es5"
+    "target": "es6"
   },
   "compileOnSave": false,
   "buildOnSave": false,
   "include": [
-    "src/**/*",
+    "src/**/*.ts",
     "typings/browser.d.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/**/*.spec.ts"
   ]
 }
