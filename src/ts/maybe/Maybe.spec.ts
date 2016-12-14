@@ -69,8 +69,63 @@ describe('MaybeDecorator.caseOf', () => {
 
 });
 
-describe('Maybe.caseOf', () => {
+describe('MaybeDecorator.un', () => {
 
-  const myThing = M(Maybe('lol')).map(str => true).un();
+    it('should unwrap Just values', () => {
+      const result = M(Just('value')).un();
+      expect(result).toEqual(Just('value'));
+    });
+
+    it('should unwrap Nothing values', () => {
+      const result = M(Nothing()).un();
+      expect(result).toEqual(Nothing());
+    });
+});
+
+describe('MaybeDecorator.map', () => {
+
+    it('should convert Just values', () => {
+      const result = M(Just("value")).map(str => true).un();
+      expect(result).toEqual(Just(true));
+    });
+
+    it('should not convert Nothing values', () => {
+      const result = M(Nothing()).map(str => false).un();
+      expect(result).toEqual(Nothing());
+    });
+
+    it('should pass the correct value to the supplied function', () => {
+      const result = M(Just('test')).map(str => {
+        expect(str).toBe('test');
+        return true;
+      }).un();
+      expect(result).toEqual(Just(true));
+    });
+});
+
+describe('MaybeDecorator.flatMap', () => {
+
+  it('should return Just when given a Just and f evaluates to Just', () => {
+    const result = M(Just('test')).flatMap(str => Just(true)).un();
+    expect(result).toEqual(Just(true));
+  });
+
+  it('should return Just when given a Nothing', () => {
+    const result = M(Nothing()).flatMap(str => Just(true)).un();
+    expect(result).toEqual(Nothing());
+  });
+
+  it('should return Nothing when given a Just and f evaluates to Nothing', () => {
+    const result = M(Just('value')).flatMap(str => Nothing()).un();
+    expect(result).toEqual(Nothing());
+  });
+
+  it('should provide the correct value to f', () => {
+    const result = M(Just('test_value_please_ignore')).flatMap(str => {
+      expect(str).toEqual('test_value_please_ignore');
+      return Just('correct')
+    }).un();
+    expect(result).toEqual(Just('correct'));
+  });
 
 });
