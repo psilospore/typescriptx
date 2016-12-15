@@ -4,7 +4,7 @@
   "main": "src/ts/index.ts",
   "license": "MIT",
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "docs": "typedoc --out ./docs --exclude \"**/*.spec.ts\" --module commonjs --readme ./Readme.md --theme minimal ./src ",
     "build": "webpack"
   },

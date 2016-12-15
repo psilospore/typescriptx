@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es6"
+    "target": "es6",
+    "sourceMap": true
   },
   "compileOnSave": false,
   "buildOnSave": false,
@@ -10,7 +11,6 @@
     "typings/browser.d.ts"
   ],
   "exclude": [
-    "node_modules",
-    "src/**/*.spec.ts"
+    "node_modules"
   ]
 }

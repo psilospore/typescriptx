@@ -150,3 +150,52 @@ describe('MaybeDecorator.filter', () => {
     expect(result).toEqual(Just("val"));
   });
 });
+
+describe('MaybeDecorator.getOrElse', () => {
+
+  it('should return the original value if given a Just', () => {
+    const result = M(Maybe("val")).getOrElse(() => "unused");
+    expect(result).toEqual("val");
+  });
+
+  it('should return the supplied value if given a Nothing', () => {
+    const result = M(Nothing()).getOrElse(() => "should-be-used");
+    expect(result).toEqual("should-be-used");
+  });
+
+  it('should not invoke f if given a Just', () => {
+    const result = M(Maybe("val")).getOrElse(() => {
+      throw new Error("This shouldn't have been invoked.");
+    });
+    expect(result).toEqual("val");
+  });
+
+});
+
+describe('MaybeDecorator.orElse', () => {
+
+  it('should return the original value if given a Just', () => {
+    const result = M(Maybe("val")).orElse("unused");
+    expect(result).toEqual("val");
+  });
+
+  it('should return the supplied value if given a Nothing', () => {
+    const result = M(Nothing()).orElse("should-be-used");
+    expect(result).toEqual("should-be-used");
+  });
+
+});
+
+describe('MaybeDecorator.isJust', () => {
+
+  it('should return true if given a Just', () => {
+    const result = M(Maybe("val")).isJust();
+    expect(result).toEqual(true);
+  });
+
+  it('should return false if given a Nothing', () => {
+    const result = M(Nothing()).isJust();
+    expect(result).toEqual(false);
+  });
+
+});
