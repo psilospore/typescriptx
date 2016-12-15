@@ -129,3 +129,24 @@ describe('MaybeDecorator.flatMap', () => {
   });
 
 });
+
+describe('MaybeDecorator.filter', () => {
+
+  it('should return Nothing for false predicate evaluation', () => {
+    const result = M(Maybe("val")).filter(str => false).un();
+    expect(result).toEqual(Nothing());
+  });
+
+  it('should return Just for true predicate evaluation', () => {
+    const result = M(Maybe("val")).filter(str => true).un();
+    expect(result).toEqual(Just("val"));
+  });
+
+  it('should provide the correct value to the predicate', () => {
+    const result = M(Maybe("val")).filter(str => {
+      expect(str).toEqual("val");
+      return true;
+    }).un();
+    expect(result).toEqual(Just("val"));
+  });
+});

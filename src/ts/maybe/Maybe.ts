@@ -65,6 +65,9 @@ class MaybeDecorator<A> {
       nothing: () => false
     });
   }
+  filter(predicate: (a: A) => Boolean): MaybeDecorator<A> {
+    return this.flatMap(a => predicate(a) ? Just(a) : Nothing());
+  }
 }
 
 export const M = function<A>(m: Maybe<A>): MaybeDecorator<A> {
@@ -77,7 +80,7 @@ export function Maybe<A>(value?: A): Maybe<A> {
     case undefined:
       return Nothing();
     default:
-      return Just(value);  
+      return Just(value);
   }
 }
 
