@@ -1,7 +1,7 @@
 {
   "name": "monads",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/ts/index.ts",
   "license": "MIT",
   "scripts": {
     "test": "jest",
