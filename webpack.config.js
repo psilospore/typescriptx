@@ -33,6 +33,9 @@ module.exports = {
       exclude: /node_modules/,
     }]
   },
+  ts: {
+    configFileName: './tsconfig-build.json'
+  },
 
   plugins: [
     new webpack.NoErrorsPlugin()
