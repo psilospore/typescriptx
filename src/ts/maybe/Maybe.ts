@@ -1,5 +1,12 @@
+/**
+ * A type describing a value that may be empty.
+ * Use type narrowing or MaybeDecorator to extract values.
+ */
 export type Maybe<A> = Just<A> | Nothing;
 
+/**
+ * A representaion
+ */
 export interface Just<A> {
   readonly type: 'Just';
   readonly value: A;

@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jest --coverage",
-    "docs": "typedoc --out ./docs --exclude \"**/*.spec.ts\" --module commonjs --readme ./Readme.md --theme minimal ./src ",
+    "docs": "typedoc --out ./docs --exclude \"**/*.spec.ts\" --module commonjs --readme ./Readme.md ./src ",
     "build": "webpack"
   },
   "dependencies": {},
