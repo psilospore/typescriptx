@@ -21,6 +21,9 @@ export class TryDecorator<A> {
   constructor(a: Try<A>) {
     this.value = a;
   }
+  un(): Try<A> {
+    return this.value;
+  }
   caseOf<Z>(c: TryCaseMatcher<A, Z>): Z {
     switch(this.value.type) {
       case 'Success':
@@ -32,13 +35,13 @@ export class TryDecorator<A> {
   map<B>(f: (a:A) => B): TryDecorator<B> {
     return this.caseOf({
       success: a => T(Success(f(a))),
-      err: err => T<B>(err)
+      err: err => T<B>(Err(err))
     });
   }
-  flatMap<B>(f: (a:A) => Try<B>): Try<B> {
+  flatMap<B>(f: (a:A) => Try<B>): TryDecorator<B> {
     return this.caseOf({
-      success: a => f(a),
-      err: err => err
+      success: a => T(f(a)),
+      err: err => T<B>(Err(err))
     });
   }
 }
