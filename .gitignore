@@ -1,7 +1,6 @@
 
 typings/
 node_modules/
-docs/
 dist/
 compiled/
 coverage/
