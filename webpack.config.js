@@ -19,7 +19,7 @@ module.exports = {
   output: {
       path: 'dist',
       filename: '[name].js',
-      library: 'monads',
+      library: 'typescriptx',
       libraryTarget: 'var'
   },
   module: {

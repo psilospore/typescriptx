@@ -1,13 +1,13 @@
-# Monads
+# TypescriptX
 
-Monads for JavaScript/Typescript.
+Typescript Extensions for use in JavaScript/Typescript.
 
 ## Principles
 
 ### 1. Simple ADT
-*Monads* uses simple [Algebraic Data Types](https://www.typescriptlang.org/docs/handbook/advanced-types.html#discriminated-unions) to encode its entities which allows us to express values with plain JavaScript objects. This makes it an excellent choice for serializing type-safe entities with a tool like lscache or redux.
+*TypescriptX* uses simple [Algebraic Data Types](https://www.typescriptlang.org/docs/handbook/advanced-types.html#discriminated-unions) to encode its entities which allows you to express values with plain JavaScript objects. This makes it an excellent choice for serializing type-safe entities with a tool like lscache or redux.
 ### 2. Developer Experience
-*Monads* tries not to clutter your code, and will prefer concise decorators in an attempt to not distract readers and writers from the point of the code.
+*TypescriptX* tries not to clutter your code, and will prefer concise decorators in an attempt to not distract readers and writers from the point of the code.
 
 ## Maybe
 

@@ -1,12 +1,15 @@
 {
-  "name": "monads",
-  "version": "1.0.0",
-  "main": "src/ts/index.ts",
+  "name": "typescriptx",
+  "version": "0.1.0",
   "license": "MIT",
+  "main": "dist/typescriptx.umd.js",
+  "module": "dist/typescriptx.es5.js",
+  "typings": "dist/types/typescriptx.d.ts",
   "scripts": {
     "test": "jest --coverage",
     "docs": "typedoc --out ./docs --exclude \"**/*.spec.ts\" --module commonjs --readme ./Readme.md ./src ",
-    "build": "webpack"
+    "prebuild": "rimraf dist",
+    "build": "tsc && rollup -c && rimraf compiled && typedoc --out dist/docs --target es6 --theme minimal src"
   },
   "dependencies": {},
   "devDependencies": {
@@ -18,9 +21,12 @@
     "jasmine": "^2.5.2",
     "jest": "^17.0.3",
     "jest-cli": "^17.0.3",
-    "ts-loader": "^1.3.2",
-    "typescript": "^2.1.4",
-    "webpack": "^1.14.0"
+    "rimraf": "^2.6.1",
+    "rollup": "^0.42.0",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "typedoc": "^0.7.1",
+    "typescript": "^2.3.4"
   },
   "jest": {
     "verbose": true,

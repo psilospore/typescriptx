@@ -10,7 +10,7 @@ export interface Err {
   error: any;
 };
 
-type TryCaseMatcher<A, Z> = {
+export type TryCaseMatcher<A, Z> = {
   success:  (value: A) => Z,
   err: (error: any) => Z
 };

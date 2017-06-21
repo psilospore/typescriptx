@@ -24,7 +24,7 @@ export interface Right<R> {
 /**
  * An object that handles values of type `L` or `R`, evaluating them to `Z`
  */
-type CaseMatcher<L, R, Z> = {
+export type CaseMatcher<L, R, Z> = {
   left:  (l: L) => Z,
   right: (r: R) => Z
 };

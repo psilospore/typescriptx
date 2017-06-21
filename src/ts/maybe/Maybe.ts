@@ -16,7 +16,7 @@ export interface Nothing {
   readonly type: 'Nothing'
 };
 
-type CaseOfMatcher<A, B> = {
+export type CaseOfMatcher<A, B> = {
   just: (a: A) => B,
   nothing: () => B
 };
@@ -25,7 +25,7 @@ interface CaseOfFunc<A> {
   <B>(matcher: CaseOfMatcher<A, B>): B;
 }
 
-class MaybeDecorator<A> {
+export class MaybeDecorator<A> {
   private m: Maybe<A>;
 
   constructor(m: Maybe<A>) {
