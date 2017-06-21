@@ -1,6 +1,6 @@
 {
   "name": "typescriptx",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "license": "MIT",
   "main": "dist/typescriptx.umd.js",
   "module": "dist/typescriptx.es5.js",
