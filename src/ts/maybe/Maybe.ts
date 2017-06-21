@@ -5,13 +5,16 @@
 export type Maybe<A> = Just<A> | Nothing;
 
 /**
- * A representaion
+ * A representaion of a value that is present.
  */
 export interface Just<A> {
   readonly type: 'Just';
   readonly value: A;
 };
 
+/**
+ * A representaion of a value that is absent.
+ */
 export interface Nothing {
   readonly type: 'Nothing'
 };
