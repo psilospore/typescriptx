@@ -8,10 +8,7 @@
   "buildOnSave": false,
   "include": [
     "src/**/*.ts",
-    "typings/browser.d.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "src/**/*.spec.ts"
+    "src/**/*.spec.ts",
+    "typings/index.d.ts"
   ]
 }

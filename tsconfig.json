@@ -1,19 +1,15 @@
 {
   "compilerOptions": {
-    "module": "es2015",
-    "target": "es5",
-    "sourceMap": true,
-    "declaration": true,
-    "declarationDir": "dist/types",
-    "outDir": "compiled"
+    "module": "commonjs",
+    "target": "es6"
   },
   "compileOnSave": false,
   "buildOnSave": false,
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "typings/index.d.ts"
   ],
   "exclude": [
-    "node_modules",
-    "src/**/*.spec.ts"
+    "node_modules"
   ]
 }
