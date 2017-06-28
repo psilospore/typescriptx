@@ -9,7 +9,7 @@
     "test": "jest --coverage",
     "docs": "typedoc --out ./docs --exclude \"**/*.spec.ts\" --module commonjs --readme ./Readme.md ./src ",
     "prebuild": "rimraf dist",
-    "build": "tsc && rollup -c && rimraf compiled && typedoc --out dist/docs --target es6 --theme minimal src"
+    "build": "tsc --project ./tsconfig-build.json && rollup -c && rimraf compiled && typedoc --out dist/docs --target es6 --theme minimal src"
   },
   "devDependencies": {
     "babel-core": "^6.18.2",
@@ -40,7 +40,5 @@
     ],
     "testRegex": "src/.*\\.spec\\.ts$"
   },
-  "dependencies": {
-    "@types/es6-promise": "^0.0.32"
-  }
+  "dependencies": {}
 }

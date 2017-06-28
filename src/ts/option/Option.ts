@@ -1,3 +1,5 @@
+//import {sequenceM} from '../monad/Monad';
+
 /**
  * A type describing a value that may be empty.
  * Use type narrowing or OptionDecorator to extract values.
@@ -54,14 +56,14 @@ export class OptionDecorator<A> {
   }
   map<B>(f: (a: A) => B): OptionDecorator<B> {
     return this.caseOf({
-      some:  a => M<B>(Some(f(a))),
-      none: () => M<B>(None())
+      some:  a => O<B>(Some(f(a))),
+      none: () => O<B>(None())
     });
   }
   flatMap<B>(f: (a: A) => Option<B>): OptionDecorator<B> {
     return this.caseOf({
-      some:     a => M(f(a)),
-      none: () => M<B>(None())
+      some:     a => O(f(a)),
+      none: () => O<B>(None())
     });
   }
   getOrElse(f: () => A): A {
@@ -87,9 +89,11 @@ export class OptionDecorator<A> {
   }
 }
 
-export const M = function<A>(m: Option<A>): OptionDecorator<A> {
+export const O = function<A>(m: Option<A>): OptionDecorator<A> {
   return new OptionDecorator(m);
 };
+
+export const dec: <A>(a: A) => OptionDecorator<A> = compose(Option, O);
 
 export function Option<A>(value?: A): Option<A> {
   switch(value){
@@ -103,23 +107,14 @@ export function Option<A>(value?: A): Option<A> {
 
 function sequence<A>(options: Option<A>[]): Option<A[]> {
   return options.reduce((prevValue, currValue) => {
-    return M(prevValue).flatMap(values => {
-      return M(currValue).map(value => ([...values, value])).un()
+    return O(prevValue).flatMap(values => {
+      return O(currValue).map(value => ([...values, value])).un()
     }).un();
   }, <Option<A[]>> Some(<A[]>[]));
 }
 
-export type Monad<A> = {
-  flatMap<B>(a: (A) => Monad<B>): Monad<B>
-  map<B>(a: (A) => B): Monad<B> //map is not required for a monad
-};
-
-export function sequenceM<A, B extends Monad<A>, Z>(monads: B[], point: (Z) => Monad<Z>): Monad<A[]>{
-  return monads.reduce((prevValue, currValue) => {
-    return prevValue.flatMap(values => {
-      return currValue.map(value => ([...values, value]))
-    });
-  }, point([]));
+function compose<A, B, C>(f: (a: A) => B, g: (B: B) => C): (a: A) => C {
+  return (a: A) => g(f(a));
 }
 
 export function all<T1, T2, T3, T4, T5, T6, T7, T8, T9>(values: [Option<T1>, Option<T2>, Option<T3>, Option<T4>, Option<T5>, Option<T6>, Option<T7>, Option<T8>, Option<T9>]): Option<[T1, T2, T3, T4, T5, T6, T7, T8, T9]>;
@@ -131,5 +126,6 @@ export function all<T1, T2, T3, T4>(values: [Option<T1>, Option<T2>, Option<T3>,
 export function all<T1, T2, T3>(values: [Option<T1>, Option<T2>, Option<T3>]): Option<[T1, T2, T3]>;
 export function all<T1, T2>(values: [Option<T1>, Option<T2>]): Option<[T1, T2]>;
 export function all<T>(values: (Option<T>)[]): Option<T[]> {
-  return (<any>sequence)(values);
+  return sequence(values);
+  // return sequenceM<T, Option<T>, OptionDecorator<T>, Array<T>>(values.map(O), compose(Some, O)).un();
 }
