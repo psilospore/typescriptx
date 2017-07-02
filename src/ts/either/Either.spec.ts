@@ -1,4 +1,4 @@
-import { Either, Left, Right, E, EitherDecorator } from './Either';
+import { Either, Left, Right, E, EitherDecorator, all } from './Either';
 import 'jest';
 import 'jasmine';
 
@@ -105,6 +105,30 @@ describe('EitherDecorator.flatMap', () => {
       return Right('correct')
     }).un();
     expect(result).toEqual(Right('correct'));
+  });
+
+  describe('all', () => {
+    it('should bind through all rights', () => {
+
+      const test = all([Right("yes"), Right(5), Right({userName: 'johndoe', coolPercentage: 100})]);
+
+      const result = E(test).flatMap(([myStr, myNum, user]) => {
+        return Right(myStr.repeat(myNum));
+      }).getOrElse(() => { throw "should not be called" });
+
+      expect(result).toEqual("yesyesyesyesyes");
+    });
+  });
+
+  describe('swap', () => {
+    it('should swap types', () => {
+      
+      expect(E(Right("test_value")).swap().un()).toEqual(Left("test_value"))
+
+
+      expect(E(Left(5)).swap().un()).toEqual(Right(5))
+
+    });
   });
 
 });
