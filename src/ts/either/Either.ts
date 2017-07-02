@@ -1,3 +1,5 @@
+import { identity } from '../function/function';
+
 /**
  * A Type describing a value that can either be `Left` with a value of type `L`,
  * or `Right` with a value of `R`.
@@ -80,7 +82,7 @@ export class EitherDecorator<L, R> {
   /**
    * Returns true if the decorated Either is Right, false otherwise.
    */
-  isRight<L, R>(): Boolean {
+  isRight(): Boolean {
     return this.caseOf({
       left:  l => false,
       right: r => true
@@ -90,8 +92,48 @@ export class EitherDecorator<L, R> {
    * Returns true if the decorated Either is Left, false otherwise.
    * The inverse of isRight()
    */
-  isLeft<L, R>(): Boolean {
+  isLeft(): Boolean {
     return !this.isRight();
+  }
+
+  /**
+   * Swaps the value inside this EitherDecorator. 
+   */
+  swap(): EitherDecorator<R, L> {
+    return this.caseOf({
+      left: l => E<R, L>(Right(l)),
+      right: r => E<R, L>(Left(r))
+    });
+  }
+  /**
+   * Returns the right value if this EitherDecorator is right, the result of f if it is left.
+   * f will not be invoked unless this value is left.
+   * @param f
+   */
+  getOrElse(f: () => R): R {
+    return this.caseOf({
+      left:  l => f(),
+      right: identity
+    });
+  }
+  /**
+   * Return R if this EitherDecorator is right, and z if it is left
+   * @param z the value to return in case of left
+   */
+  orElse(z: R): R {
+    return this.caseOf({
+      left: l => z,
+      right: identity
+    });
+  }
+  /**
+   * Returns a list of size one with r if right, or size zero if left
+   */
+  toList(): R[]{
+    return this.caseOf({
+      left: () => [],
+      right: r => [r]
+    });
   }
 }
 
@@ -121,4 +163,25 @@ export function Right<R>(r: R): Right<R> {
     type: 'Right',
     right: r
   };
+}
+
+// grr why can't i write this generically... Do I really need Higher Kinded Types?
+function sequence<A, B>(eithers: Either<A, B>[]): Either<A, B[]> {
+  return eithers.reduce((prevValue, currValue) => {
+    return E(prevValue).flatMap(values => {
+      return E(currValue).map(value => ([...values, value])).un()
+    }).un();
+  }, <Either<A, B[]>> Right(<B[]>[]));
+}
+
+export function all<A, B1, B2, B3, B4, B5, B6, B7, B8, B9>(values: [Either<A, B1>, Either<A, B2>, Either<A, B3>, Either<A, B4>, Either<A, B5>, Either<A, B6>, Either<A, B7>, Either<A, B8>, Either<A, B9>]): Either<A, [B1, B2, B3, B4, B5, B6, B7, B8, B9]>;
+export function all<A, B1, B2, B3, B4, B5, B6, B7, B8>(values: [Either<A, B1>, Either<A, B2>, Either<A, B3>, Either<A, B4>, Either<A, B5>, Either<A, B6>, Either<A, B7>, Either<A, B8>]): Either<A, [B1, B2, B3, B4, B5, B6, B7, B8]>;
+export function all<A, B1, B2, B3, B4, B5, B6, B7>(values: [Either<A, B1>, Either<A, B2>, Either<A, B3>, Either<A, B4>, Either<A, B5>, Either<A, B6>, Either<A, B7>]): Either<A, [B1, B2, B3, B4, B5, B6, B7]>;
+export function all<A, B1, B2, B3, B4, B5, B6>(values: [Either<A, B1>, Either<A, B2>, Either<A, B3>, Either<A, B4>, Either<A, B5>, Either<A, B6>]): Either<A, [B1, B2, B3, B4, B5, B6]>;
+export function all<A, B1, B2, B3, B4, B5>(values: [Either<A, B1>, Either<A, B2>, Either<A, B3>, Either<A, B4>, Either<A, B5>]): Either<A, [B1, B2, B3, B4, B5]>;
+export function all<A, B1, B2, B3, B4>(values: [Either<A, B1>, Either<A, B2>, Either<A, B3>, Either<A, B4>]): Either<A, [B1, B2, B3, B4]>;
+export function all<A, B1, B2, B3>(values: [Either<A, B1>, Either<A, B2>, Either<A, B3>]): Either<A, [B1, B2, B3]>;
+export function all<A, B1, B2>(values: [Either<A, B1>, Either<A, B2>]): Either<A, [B1, B2]>;
+export function all<A, B>(values: (Either<A, B>)[]): Either<A, B[]> {
+  return sequence(values);
 }
