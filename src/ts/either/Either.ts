@@ -1,26 +1,29 @@
 import { identity } from '../function/function';
+import { sequenceM } from '../monad/Monad';
 
 /**
  * A Type describing a value that can either be `Left` with a value of type `L`,
  * or `Right` with a value of `R`.
  * Use type narrowing or `EitherDecorator` to extract values.
  */
-export type Either<L, R> = Left<L> | Right<R>;
+export type Either<L, R> = Left<L, R> | Right<L, R>;
 
 /**
  * A `Left` container with value of type `L`
  */
-export interface Left<L> {
+export interface Left<L, R> {
   type: 'Left';
   left: L;
+  flatMap<A>(f:(r:R) => Either<L, A>): Either<L, A>
 }
 
 /**
  * A `Right` container with value of type `R`
  */
-export interface Right<R> {
+export interface Right<L, R> {
   type: 'Right';
   right: R;
+  flatMap<A>(f:(r:R) => Either<L, A>): Either<L, A>
 }
 
 /**
@@ -138,40 +141,29 @@ export class EitherDecorator<L, R> {
 }
 
 /**
- * Wraps an Either in an EitherDecorator, which provides
- * some useful functional combinators.
- */
-export function E<L, R>(e: Either<L, R>): EitherDecorator<L, R> {
-  return new EitherDecorator(e);
-}
-
-/**
  * Creates an instance of Left
  */
-export function Left<L>(l: L): Left<L> {
+export function Left<L, R>(l: L): Left<L, R> {
   return {
     type: 'Left',
-    left: l
+    left: l,
+    flatMap<A>(f:(r:R) => Either<L, A>): Either<L, A> {
+      return this;
+    }
   };
 };
 
 /**
  * Creates an instance of Right.
  */
-export function Right<R>(r: R): Right<R> {
+export function Right<L, R>(r: R): Right<L, R> {
   return {
     type: 'Right',
-    right: r
+    right: r,
+    flatMap<A>(f:(r:R) => Either<L, A>): Either<L, A> {
+      return f(this.right);
+    }
   };
-}
-
-// grr why can't i write this generically... Do I really need Higher Kinded Types?
-function sequence<A, B>(eithers: Either<A, B>[]): Either<A, B[]> {
-  return eithers.reduce((prevValue, currValue) => {
-    return E(prevValue).flatMap(values => {
-      return E(currValue).map(value => ([...values, value])).un()
-    }).un();
-  }, <Either<A, B[]>> Right(<B[]>[]));
 }
 
 export function all<A, B1, B2, B3, B4, B5, B6, B7, B8, B9>(values: [Either<A, B1>, Either<A, B2>, Either<A, B3>, Either<A, B4>, Either<A, B5>, Either<A, B6>, Either<A, B7>, Either<A, B8>, Either<A, B9>]): Either<A, [B1, B2, B3, B4, B5, B6, B7, B8, B9]>;
@@ -183,5 +175,5 @@ export function all<A, B1, B2, B3, B4>(values: [Either<A, B1>, Either<A, B2>, Ei
 export function all<A, B1, B2, B3>(values: [Either<A, B1>, Either<A, B2>, Either<A, B3>]): Either<A, [B1, B2, B3]>;
 export function all<A, B1, B2>(values: [Either<A, B1>, Either<A, B2>]): Either<A, [B1, B2]>;
 export function all<A, B>(values: (Either<A, B>)[]): Either<A, B[]> {
-  return sequence(values);
+  return sequenceM<B, Either<A, B[]>>(values, Right);
 }

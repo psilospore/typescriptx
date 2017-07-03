@@ -1,32 +1,80 @@
-//import {sequenceM} from '../monad/Monad';
+import {sequenceM} from '../monad/Monad';
 import {compose} from '../function/function';
 
 /**
  * A type describing a value that may be empty.
  * Use type narrowing or OptionDecorator to extract values.
  */
-export type Option<A> = Some<A> | None;
+export interface Option<A> {
+  flatMap<B>(f: (a:A) => Option<B>): Option<B>
+  map<B>(f: (a: A) => B): Option<B>
+  caseOf<Z>(c: CaseOfMatcher<A, Z>): Z
+  getOrElse(f: () => A): A
+  orElse(z: A): A
+  isDefined(): Boolean
+  filter(p: (a: A) => Boolean): Option<A>
+}
 
-export interface Some<A> {
-  type: 'Some',
-  value: A
-};
+export class SomeImpl<A> implements Option<A> {
+  private value: A;
 
-export function Some<A>(a: A): Some<A> {
-  return {
-    type: 'Some',
-    value: a
+  constructor(a: A){
+    this.value = a;
+  }
+
+  flatMap<B>(f: (a: A) => Option<B>): Option<B> {
+    return f(this.value);
+  }
+  map<B>(f: (a: A) => B): Option<B> {
+    return Some(f(this.value));
+  }
+  caseOf<Z>(c: CaseOfMatcher<never, Z>): Z {
+    return c.none();
+  }
+  getOrElse(f: () => A): A  {
+    return this.value;
+  }
+  orElse(z: A): A {
+    return this.value;
+  }
+  isDefined(): Boolean {
+    return true;
+  }
+  filter(p: (a: A) => Boolean): Option<A> {
+    return p(this.value) ? this : None();
   }
 }
 
-export interface None {
-  type: 'None'
-};
+export class NoneImpl implements Option<never> {
+  flatMap<B>(f: (a: never) => Option<B>): Option<B> {
+    return this;
+  }
+  map<B>(f: (a: never) => B): Option<B> {
+    return this;
+  }
+  caseOf<Z>(c: CaseOfMatcher<never, Z>): Z {
+    return c.none();
+  }
+  getOrElse(f: () => never): never  { // wut
+    return f();
+  }
+  orElse(z: never): never {
+    return z;
+  }
+  isDefined(): Boolean {
+    return false;
+  }
+  filter(p: (a: never) => Boolean): Option<never> {
+    return this;
+  }
+}
 
-export function None(): None {
-  return {
-    type: 'None'
-  };
+export function Some<A>(a: A): SomeImpl<A> {
+  return new SomeImpl(a);
+}
+
+export function None(): NoneImpl {
+  return new NoneImpl();
 }
 
 export type CaseOfMatcher<A, B> = {
@@ -38,82 +86,6 @@ interface CaseOfFunc<A> {
   <B>(matcher: CaseOfMatcher<A, B>): B;
 }
 
-export class OptionDecorator<A> {
-  private m: Option<A>;
-
-  constructor(m: Option<A>) {
-    this.m = m;
-  }
-  un(): Option<A> {
-    return this.m;
-  }
-  caseOf<Z>(c: CaseOfMatcher<A, Z>): Z {
-    switch(this.m.type){
-      case 'Some':
-        return c.some(this.m.value);
-      default:
-        return c.none();
-    }
-  }
-  map<B>(f: (a: A) => B): OptionDecorator<B> {
-    return this.caseOf({
-      some:  a => O<B>(Some(f(a))),
-      none: () => O<B>(None())
-    });
-  }
-  flatMap<B>(f: (a: A) => Option<B>): OptionDecorator<B> {
-    return this.caseOf({
-      some:     a => O(f(a)),
-      none: () => O<B>(None())
-    });
-  }
-  getOrElse(f: () => A): A {
-    return this.caseOf({
-      some:     a => a,
-      none: () => f()
-    });
-  }
-  orElse(z: A): A {
-    return this.caseOf({
-      some: a => a,
-      none: () => z
-    });
-  }
-  isDefined(): Boolean {
-    return this.caseOf({
-      some: a => true,
-      none: () => false
-    });
-  }
-  filter(predicate: (a: A) => Boolean): OptionDecorator<A> {
-    return this.flatMap(a => predicate(a) ? Some(a) : None());
-  }
-}
-
-export const O = function<A>(m: Option<A>): OptionDecorator<A> {
-  return new OptionDecorator(m);
-};
-
-export const dec: <A>(a: A) => OptionDecorator<A> = compose(Option, O);
-
-export function Option<A>(value?: A): Option<A> {
-  switch(value){
-    case null:
-    case undefined:
-      return None();
-    default:
-      return Some(value);
-  }
-}
-
-function sequence<A>(options: Option<A>[]): Option<A[]> {
-  return options.reduce((prevValue, currValue) => {
-    return O(prevValue).flatMap(values => {
-      return O(currValue).map(value => ([...values, value])).un()
-    }).un();
-  }, <Option<A[]>> Some(<A[]>[]));
-}
-
 export function all<T1, T2, T3, T4, T5, T6, T7, T8, T9>(values: [Option<T1>, Option<T2>, Option<T3>, Option<T4>, Option<T5>, Option<T6>, Option<T7>, Option<T8>, Option<T9>]): Option<[T1, T2, T3, T4, T5, T6, T7, T8, T9]>;
 export function all<T1, T2, T3, T4, T5, T6, T7, T8>(values: [Option<T1>, Option<T2>, Option<T3>, Option<T4>, Option<T5>, Option<T6>, Option<T7>, Option<T8>]): Option<[T1, T2, T3, T4, T5, T6, T7, T8]>;
 export function all<T1, T2, T3, T4, T5, T6, T7>(values: [Option<T1>, Option<T2>, Option<T3>, Option<T4>, Option<T5>, Option<T6>, Option<T7>]): Option<[T1, T2, T3, T4, T5, T6, T7]>;
@@ -123,6 +95,5 @@ export function all<T1, T2, T3, T4>(values: [Option<T1>, Option<T2>, Option<T3>,
 export function all<T1, T2, T3>(values: [Option<T1>, Option<T2>, Option<T3>]): Option<[T1, T2, T3]>;
 export function all<T1, T2>(values: [Option<T1>, Option<T2>]): Option<[T1, T2]>;
 export function all<T>(values: (Option<T>)[]): Option<T[]> {
-  return sequence(values);
-  // return sequenceM<T, Option<T>, OptionDecorator<T>, Array<T>>(values.map(O), compose(Some, O)).un();
+  return sequenceM<T, Option<T[]>>(values, Some);
 }
