@@ -1,4 +1,5 @@
 import { Option, Some, None, all } from './Option';
+import {Do} from '../monad/Monad';
 import 'jest';
 import 'jasmine';
 
@@ -221,5 +222,57 @@ describe('all', () => {
 
     expect(result).toEqual(None());
   });
+
+
+  it('do monad things', () => {
+
+    interface User {
+      username: string,
+      age: number
+    }
+
+    function getUser(age: number): Option<User> {
+      return Some({
+        username: 'paul',
+        age
+      });
+    }
+
+    function formatString(s: string, n: number): Option<string> {
+      if(n > 10){
+        return Some(s.repeat(n));
+      } else {
+        return None();
+      }
+    }
+
+    const result = 
+      Do(function*(){
+        console.log('yielding user...');
+        const user = yield getUser(15);
+        console.log('yielding sum...');
+        const sum = yield formatString(user.username, user.age);
+        console.log('yielding last...');
+        return Some('sum+3');
+      });
+
+    expect(result).toEqual(Some('sum+3'));
+
+
+    const result2 = 
+      Do(function*(){
+        console.log('yielding user...');
+        const user = yield getUser(5);
+        console.log('yielding sum...');
+        const sum = yield formatString(user.username, user.age);
+        console.log('yielding last...');
+        return Some('sum+3');
+      });
+
+    expect(result2).toEqual(None());
+
+
+  });
+
 
 });

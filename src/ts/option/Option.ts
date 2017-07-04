@@ -7,12 +7,19 @@ import {compose} from '../function/function';
  */
 export interface Option<A> {
   flatMap<B>(f: (a:A) => Option<B>): Option<B>
+  then<B>(f: (a:A) => Option<B>): Option<B>
   map<B>(f: (a: A) => B): Option<B>
   caseOf<Z>(c: CaseOfMatcher<A, Z>): Z
   getOrElse(f: () => A): A
   orElse(z: A): A
   isDefined(): Boolean
   filter(p: (a: A) => Boolean): Option<A>
+}
+
+export namespace Option {
+  export function of<A>(a?:A): Option<A> {
+    return a == null ? None() : Some(a);
+  }
 }
 
 export class SomeImpl<A> implements Option<A> {
@@ -24,6 +31,9 @@ export class SomeImpl<A> implements Option<A> {
 
   flatMap<B>(f: (a: A) => Option<B>): Option<B> {
     return f(this.value);
+  }
+  then<B>(f: (a: A) => Option<B>): Option<B> {
+    return this.flatMap(f);
   }
   map<B>(f: (a: A) => B): Option<B> {
     return Some(f(this.value));
@@ -48,6 +58,9 @@ export class SomeImpl<A> implements Option<A> {
 export class NoneImpl implements Option<never> {
   flatMap<B>(f: (a: never) => Option<B>): Option<B> {
     return this;
+  }
+  then<B>(f: (a: never) => Option<B>): Option<B> {
+    return this.flatMap(f);
   }
   map<B>(f: (a: never) => B): Option<B> {
     return this;
