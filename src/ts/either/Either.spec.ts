@@ -1,12 +1,14 @@
-import { Either, Left, Right, all } from './Either';
+import { Either, Left, Right } from './Either';
+import {Do} from '../monad/Monad';
 import 'jest';
 import 'jasmine';
 
 // describe('EitherDecorator.caseOf', () => {
 
 //   it('should invoke "left" when given a Left', () => {
-//     const e: Either<string, number> = Left("value");
-//     const result = E(e).caseOf({
+//     // Either.left<string, string>("value");
+//     const e: Either<string, number> = Either.leftB("value").build<number>();
+//     const result = e.caseOf({
 //       left: left => left + "_success",
 //       right: right => "lol"
 //     });
@@ -110,17 +112,55 @@ import 'jasmine';
   describe('all', () => {
     it('should bind through all rights', () => {
 
-      const test = all([Right("yes"), Right(5), Right({userName: 'johndoe', coolPercentage: 100})]);
+      const test = Either.all([Either.right("yes"), Either.right(5), Either.right({userName: 'johndoe', coolPercentage: 100})]);
 
 
       const result = test.flatMap(([myStr, myNum, user]) => {
-        return Right(myStr.repeat(myNum));
+        return Either.right(myStr.repeat(myNum));
       });
 
-      if(result.type === "Right") {
-        expect(result.right).toEqual("yesyesyesyesyes");
-      }
+      expect(result.isRight()).toBe(true);
 
+      expect(result.orElse("no")).toEqual("yesyesyesyesyes")
+
+    });
+
+  });
+
+  interface User {
+    username: string,
+    age: number
+  }
+
+  function validateUser(username: string, age: number): Either<string, User> {
+    if(username == null || username.length < 1){
+      return Either.left<string, User>("Username cannot be blank");
+    } else {
+      return Either.right<string, User>({username, age});
+    }
+  }
+
+  function validatePassword(password: string): Either<string, string> {
+    if(password == null || password.length < 5){
+      return Either.left<string, string>("Password must be at least 5 characters long");
+    } else {
+      return Either.right<string, string>(password);
+    }
+  }
+
+  describe('do', () => {
+    it('should work with eithers', () => {
+      const result = 
+        Do(function*(){
+          
+          const user = yield validateUser('paul', 15);
+          
+          const password = yield validatePassword('pass');
+          
+          return Either.right([user, password]);
+        });
+
+      expect(result).toEqual(Either.left("Password must be at least 5 characters long"));
     });
 
   });

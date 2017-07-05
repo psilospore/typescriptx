@@ -8,7 +8,6 @@ describe('Option', () => {
   it('should work', () => {
     all([Some("test"), Some(5), Some({user: 'Paul', password:'supersecret'})])
       .flatMap(([myStr, myNum, myUser]) => {
-        console.log(myStr, myNum, myUser);
         return None();
       });
   });
@@ -224,7 +223,7 @@ describe('all', () => {
   });
 
 
-  it('do monad things', () => {
+  it('should do monad things', () => {
 
     interface User {
       username: string,
@@ -248,11 +247,11 @@ describe('all', () => {
 
     const result = 
       Do(function*(){
-        console.log('yielding user...');
+
         const user = yield getUser(15);
-        console.log('yielding sum...');
+
         const sum = yield formatString(user.username, user.age);
-        console.log('yielding last...');
+
         return Some('sum+3');
       });
 
@@ -261,16 +260,15 @@ describe('all', () => {
 
     const result2 = 
       Do(function*(){
-        console.log('yielding user...');
+
         const user = yield getUser(5);
-        console.log('yielding sum...');
+
         const sum = yield formatString(user.username, user.age);
-        console.log('yielding last...');
+
         return Some('sum+3');
       });
 
     expect(result2).toEqual(None());
-
 
   });
 
