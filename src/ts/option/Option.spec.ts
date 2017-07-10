@@ -1,4 +1,4 @@
-import { Option, Some, None, O, all } from './Option';
+import { Option, Some, None } from './Option';
 import 'jest';
 import 'jasmine';
 
@@ -23,21 +23,22 @@ describe('Option', () => {
 
 });
 
-describe('OptionDecorator.caseOf', () => {
+describe('Option.caseOf', () => {
 
   it('should invoke "some" when given a Some', () => {
-    const result = O(Some('value')).caseOf({
+    const result = Option.caseOf({
       some: v => true,
       none: () => false
-    });
+    })(Some('value'));
+    
     expect(result).toBe(true);
   });
 
   it('should invoke "none" when given a None', () => {
-    const result = O(None()).caseOf({
+    const result = Option.caseOf({
       some: v => true,
       none: () => false
-    });
+    })(None());
     expect(result).toBe(false);
   });
 
