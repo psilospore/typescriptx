@@ -40,5 +40,8 @@
     ],
     "testRegex": "src/.*\\.spec\\.ts$"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@types/jasmine": "^2.6.0",
+    "@types/jest": "^21.1.2"
+  }
 }

@@ -1,4 +1,4 @@
-import { Option, Some, None, all } from './Option';
+import { Option } from './Option';
 import {Do} from '../monad/Monad';
 import 'jest';
 import 'jasmine';
@@ -6,9 +6,9 @@ import 'jasmine';
 describe('Option', () => {
   
   it('should work', () => {
-    all([Some("test"), Some(5), Some({user: 'Paul', password:'supersecret'})])
+    Option.all([Option.of("test"), Option.of(5), Option.of({user: 'Paul', password:'supersecret'})])
       .flatMap(([myStr, myNum, myUser]) => {
-        return None();
+        return Option.empty();
       });
   });
 
