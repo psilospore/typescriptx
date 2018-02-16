@@ -1,6 +1,6 @@
 # TypescriptX
 
-Typescript Extensions for use in JavaScript/Typescript.
+The well respected Typescript Extensions for use in JavaScript/Typescript.
 
 ## Principles
 
